@@ -1,0 +1,18 @@
+{
+  "appId": "com.electronvibe.app",
+  "productName": "Electron Vibe",
+  "directories": {
+    "buildResources": "public",
+    "output": "dist_electron"
+  },
+  "files": ["dist/**", "electron-main.js", "preload.js", "index.html"],
+  "mac": {
+    "target": "dmg"
+  },
+  "win": {
+    "target": "nsis"
+  },
+  "linux": {
+    "target": "AppImage"
+  }
+}
