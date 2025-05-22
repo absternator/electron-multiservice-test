@@ -5,7 +5,22 @@
     "buildResources": "public",
     "output": "dist_electron"
   },
-  "files": ["dist/**", "electron-main.js", "preload.js", "index.html"],
+  "files": [
+    "dist/**",
+    "electron-main.js",
+    "preload.js",
+    "index.html",
+    "resources/**",
+    "src/assets/**",
+    "resource-utils.js"
+  ],
+  "extraFiles": [
+    {
+      "from": "resources/${os}",
+      "to": "resources/bin",
+      "filter": ["**/*"]
+    }
+  ],
   "mac": {
     "target": "dmg"
   },

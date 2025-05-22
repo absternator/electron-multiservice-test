@@ -8,10 +8,11 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "electron:dev": "concurrently \"vite\" \"electron .\"",
-    "electron:build": "vite build && electron-builder --config electron-builder.json"
+    "electron:dev": "NODE_ENV=development concurrently \"vite\" \"electron .\"",
+    "electron:build": "npm run build && electron-builder --config electron-builder.json"
   },
   "dependencies": {
+    "app-root-dir": "^1.0.2",
     "concurrently": "^9.1.2",
     "node-fetch": "^3.3.2",
     "react": "^19.1.0",

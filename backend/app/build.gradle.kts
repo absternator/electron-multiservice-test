@@ -13,6 +13,8 @@ plugins {
     // Apply the application plugin to add support for building a CLI application in Java.
     application
 
+    id("io.ktor.plugin") version "3.1.3"
+
     id("org.jetbrains.kotlin.plugin.serialization") version "1.9.23"
 }
 
@@ -59,5 +61,12 @@ java {
 
 application {
     // Define the main class for the application.
-    mainClass = "org.example.AppKt"
+    mainClass.set("org.example.AppKt")
 }
+
+ktor {
+    fatJar {
+        archiveFileName.set("fat.jar")
+    }
+}
+

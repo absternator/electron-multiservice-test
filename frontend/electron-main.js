@@ -3,9 +3,32 @@ import { app, BrowserWindow, ipcMain } from "electron";
 import path from "path";
 import { fileURLToPath } from "url";
 import fetch from "node-fetch";
+import { spawn } from "child_process";
+import { fileServicePath, backendJarPath } from "./resource-utils.js"; // Import the file service path
+let backendProcess, fileServiceProcess;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+function startServices() {
+  // Start backend (Kotlin)
+  backendProcess = spawn("java", ["-jar", backendJarPath], {
+    cwd: path.dirname(backendJarPath),
+    stdio: "inherit",
+  });
+  backendProcess.on("error", (err) => {
+    console.error("Failed to start backend:", err);
+  });
+
+  //  Start file service (Rust)
+  fileServiceProcess = spawn(fileServicePath, [], {
+    cwd: path.dirname(fileServicePath),
+    stdio: "inherit",
+  });
+  fileServiceProcess.on("error", (err) => {
+    console.error("Failed to start file service:", err);
+  });
+}
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -15,7 +38,7 @@ function createWindow() {
     minHeight: 600,
     backgroundColor: "#f5f7fa", // Soft light background
     title: "Electron Packit App",
-    icon: path.join(__dirname, "src/assets/react.svg"), // Placeholder icon
+    icon: path.join(__dirname, "src/assets/icon.png"), // Use PNG for Ubuntu dock icon
     roundedCorners: true,
     vibrancy: "light", // For a modern look (on supported platforms)
     webPreferences: {
@@ -28,11 +51,16 @@ function createWindow() {
     win.webContents.openDevTools();
     win.loadURL("http://localhost:5173");
   } else {
-    win.loadFile("index.html");
+    console.log(path.join(__dirname, "dist", "index.html"));
+    // In production, load the built index.html from the dist directory
+    win.loadFile(path.join(app.getAppPath(), "dist", "index.html"));
   }
 }
 
 app.whenReady().then(() => {
+  if (process.env.NODE_ENV !== "development") {
+    startServices();
+  }
   createWindow();
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
@@ -40,6 +68,8 @@ app.whenReady().then(() => {
 });
 
 app.on("window-all-closed", () => {
+  if (backendProcess) backendProcess.kill();
+  if (fileServiceProcess) fileServiceProcess.kill();
   if (process.platform !== "darwin") app.quit();
 });
 
