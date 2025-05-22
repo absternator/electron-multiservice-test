@@ -10,4 +10,5 @@ contextBridge.exposeInMainWorld("electronAPI", {
   },
   receive: (channel, func) =>
     ipcRenderer.on(channel, (event, ...args) => func(...args)),
+  getUserDataDir: () => ipcRenderer.invoke("get-user-data-dir"),
 });

@@ -75,28 +75,17 @@ app.on("window-all-closed", () => {
 
 // IPC handlers will be added here for communication with Kotlin backend
 
+ipcMain.handle("get-user-data-dir", () => {
+  return app.getPath("userData");
+});
+
 ipcMain.handle("file-operation", async (event, operation, payload) => {
   try {
-    // Parse the payload and rewrite file paths to be under userData
-    let parsedPayload = {};
-    try {
-      parsedPayload = JSON.parse(payload);
-    } catch (e) {
-      parsedPayload = payload;
-    }
-    // For file operations, rewrite file paths to be under userData
-    const userDataDir = app.getPath("userData");
-
+    // No path rewriting here; renderer will handle it
     const response = await fetch("http://localhost:8081/file-operation", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        operation,
-        payload: JSON.stringify({
-          ...parsedPayload,
-          path: userDataDir + "/" + parsedPayload.path,
-        }),
-      }),
+      body: JSON.stringify({ operation, payload }),
     });
     if (!response.ok) {
       throw new Error(

@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-const defaultPayloads: Record<string, any> = {
+const defaultPayloads: Record<string, Record<string, string>> = {
   create: { path: "test.txt" },
   read: { path: "test.txt" },
   update: { path: "test.txt", content: "Hello, world!" },
@@ -20,25 +20,63 @@ export default function App() {
   );
   const [result, setResult] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [userDataDir, setUserDataDir] = useState<string>("");
+
+  useEffect(() => {
+    if (
+      window.electronAPI &&
+      typeof window.electronAPI.getUserDataDir === "function"
+    ) {
+      window.electronAPI
+        .getUserDataDir()
+        .then((dir: string) => setUserDataDir(dir));
+    }
+  }, []);
+
+  const appendUserDataDir = (obj: Record<string, string>) => {
+    // For each relevant key, prepend userDataDir if not already absolute
+    const keys = ["path", "from", "to"];
+    const out = { ...obj };
+    keys.forEach((k) => {
+      if (
+        out[k] &&
+        typeof out[k] === "string" &&
+        userDataDir &&
+        !out[k].startsWith(userDataDir)
+      ) {
+        out[k] = userDataDir + "/" + out[k];
+      }
+    });
+    return out;
+  };
 
   const handleRun = async () => {
     setLoading(true);
     setResult(null);
     try {
       let res;
+      let parsedPayload = {};
+      try {
+        parsedPayload = JSON.parse(payload);
+      } catch {
+        parsedPayload = payload;
+      }
       if (window.electronAPI && typeof window.electronAPI.send === "function") {
         // Running in Electron
         res = await window.electronAPI.send(
           "file-operation",
           operation,
-          payload
+          JSON.stringify(appendUserDataDir(parsedPayload))
         );
       } else {
         // Running in web/preview mode, call backend directly
         const response = await fetch("http://localhost:8081/file-operation", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ operation, payload }),
+          body: JSON.stringify({
+            operation,
+            payload: JSON.stringify(parsedPayload),
+          }),
         });
         res = await response.json();
       }
