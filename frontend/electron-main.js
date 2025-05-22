@@ -11,6 +11,13 @@ function createWindow() {
   const win = new BrowserWindow({
     width: 1200,
     height: 800,
+    minWidth: 800,
+    minHeight: 600,
+    backgroundColor: "#f5f7fa", // Soft light background
+    title: "Electron Packit App",
+    icon: path.join(__dirname, "src/assets/react.svg"), // Placeholder icon
+    roundedCorners: true,
+    vibrancy: "light", // For a modern look (on supported platforms)
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       nodeIntegration: false,
