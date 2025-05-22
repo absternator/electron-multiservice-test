@@ -31,7 +31,7 @@ export default function App() {
         res = await window.electronAPI.send(
           "file-operation",
           operation,
-          JSON.stringify(payload)
+          payload
         );
       } else {
         // Running in web/preview mode, call backend directly
@@ -162,6 +162,10 @@ export default function App() {
           borderRadius: 8,
           fontSize: 15,
           color: "#334155",
+          maxHeight: 240,
+          overflow: "auto",
+          whiteSpace: "pre-wrap",
+          wordBreak: "break-word",
         }}
       >
         {result || "(no result)"}
