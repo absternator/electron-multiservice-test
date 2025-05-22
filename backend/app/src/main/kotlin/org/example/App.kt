@@ -12,5 +12,4 @@ class App {
 
 fun main() {
     startServer()
-    Thread.currentThread().join()
 }

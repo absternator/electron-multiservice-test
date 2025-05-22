@@ -37,7 +37,7 @@ fun startServer() {
                     }
                 }
             }
-            .start(wait = false)
+            .start(wait = true)
 }
 
 @Serializable data class FileOperationRequest(val operation: String, val payload: String)
