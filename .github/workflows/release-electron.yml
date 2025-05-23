@@ -29,8 +29,6 @@ jobs:
         run: chmod +x ./build.sh
       - name: Build everything (Linux)
         run: ./build.sh
-      - name: Build Electron App (Linux)
-        run: cd frontend && npm run electron:build:linux
       - name: Upload Linux Artifact
         uses: actions/upload-artifact@v4
         with:
@@ -58,9 +56,6 @@ jobs:
           java-version: "21"
       - name: Build everything (Windows)
         run: ./build.sh
-        shell: bash
-      - name: Build Electron App (Windows)
-        run: cd frontend && npm run electron:build:win
         shell: bash
       - name: Upload Windows Artifact
         uses: actions/upload-artifact@v4
@@ -90,9 +85,7 @@ jobs:
       - name: Build everything (macOS)
         run: ./build.sh
         shell: bash
-      - name: Build Electron App (macOS)
-        run: cd frontend && npm run electron:build:mac
-        shell: bash
+
       - name: Upload Mac Artifact
         uses: actions/upload-artifact@v4
         with:
