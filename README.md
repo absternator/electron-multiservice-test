@@ -53,31 +53,36 @@ This opens the Electron app in development mode, loading the Vite dev server.
 cd frontend
 npm run build
 ```
-#### Build the Electron App (all-in-one)
+#### Build All Services and Electron App (all platforms)
 ```
-npm run electron:build
+./build.sh
 ```
-This will package the app for your current OS. See `electron-builder.json` for targets (dmg, nsis, AppImage).
+This script builds the Rust file service, Kotlin backend, and frontend, and copies the binaries to the correct platform-specific resources directory.
 
-#### Build the Kotlin Backend
-```
-cd backend
-./gradlew :app:build
-```
-#### Build the Rust File Service
-```
-cd file-service
-cargo build --release
-```
+#### Package the Electron App (per platform)
+- **Linux:**
+  ```
+  cd frontend
+  npm run electron:build:linux
+  ```
+  The output will be `dist_electron/multivibe.AppImage`.
+- **Windows:**
+  ```
+  cd frontend
+  npm run electron:build:win
+  ```
+  The output will be `dist_electron/multivibe.exe`.
+- **macOS:**
+  ```
+  cd frontend
+  npm run electron:build:mac
+  ```
+  The output will be `dist_electron/multivibe.dmg`.
 
-### Build the whole project for linux
-```
-./build-run-linux.sh
-```
-To run the built app run the AppImage:
-```
-./frontend/dist/*.AppImage
-```
+### Automated GitHub Release
+On every push of a tag like `v1.0.0`, GitHub Actions will:
+- Build and package the app for Linux, Windows, and macOS
+- Attach the distributables to a GitHub Release automatically
 
 ## Platform Notes
 - **Windows:** Use PowerShell or Git Bash for shell commands. Electron builder will create an `.exe` installer.
