@@ -9,7 +9,10 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "electron:dev": "NODE_ENV=development concurrently \"vite\" \"electron .\"",
-    "electron:build": "npm run build && electron-builder --config electron-builder.json"
+    "electron:build": "npm run build && electron-builder --config electron-builder.json",
+    "electron:build:linux": "npm run build && electron-builder --linux --config electron-builder.json",
+    "electron:build:win": "npm run build && electron-builder --win --config electron-builder.json",
+    "electron:build:mac": "npm run build && electron-builder --mac --config electron-builder.json"
   },
   "dependencies": {
     "app-root-dir": "^1.0.2",
