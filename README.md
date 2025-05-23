@@ -43,7 +43,7 @@ Open a new terminal:
 ```
 cd frontend
 npm install
-NODE_ENV=development npm run electron:dev
+npm run electron:dev
 ```
 This opens the Electron app in development mode, loading the Vite dev server.
 
@@ -68,6 +68,11 @@ cd backend
 ```
 cd file-service
 cargo build --release
+```
+
+### Build and run the whole project for linux
+```
+./build-run-linux.sh
 ```
 
 ## Platform Notes

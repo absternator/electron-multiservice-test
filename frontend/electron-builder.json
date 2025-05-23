@@ -1,6 +1,6 @@
 {
   "appId": "com.electronvibe.app",
-  "productName": "Electron Vibe",
+  "productName": "multivibe",
   "directories": {
     "buildResources": "public",
     "output": "dist_electron"
