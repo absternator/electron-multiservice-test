@@ -6,7 +6,7 @@ on:
       - "v*.*.*"
 
 jobs:
-  build-linux:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -25,18 +25,82 @@ jobs:
         with:
           distribution: "temurin"
           java-version: "21"
-      - name: Make build-linux.sh executable
-        run: chmod +x ./build-linux.sh
-      - name: Build everything (Rust, Kotlin, Electron)
-        run: ./build-linux.sh
+      - name: Make build script executable
+        run: chmod +x ./build.sh
+      - name: Build everything (Linux)
+        run: ./build.sh
+      - name: Build Electron App (Linux)
+        run: cd frontend && npm run electron:build:linux
       - name: Upload Linux Artifact
         uses: actions/upload-artifact@v4
         with:
           name: electron-linux
           path: frontend/dist_electron/*.AppImage
 
+  build-win:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "21"
+      - name: Build everything (Windows)
+        run: ./build.sh
+        shell: bash
+      - name: Build Electron App (Windows)
+        run: cd frontend && npm run electron:build:win
+        shell: bash
+      - name: Upload Windows Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: electron-win
+          path: frontend/dist_electron/*.exe
+
+  build-mac:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "21"
+      - name: Build everything (macOS)
+        run: ./build.sh
+        shell: bash
+      - name: Build Electron App (macOS)
+        run: cd frontend && npm run electron:build:mac
+        shell: bash
+      - name: Upload Mac Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: electron-mac
+          path: frontend/dist_electron/*.dmg
+
   release:
-    needs: build-linux
+    needs: [build, build-win, build-mac]
     runs-on: ubuntu-latest
     steps:
       - name: Download Linux Artifact
@@ -44,9 +108,19 @@ jobs:
         with:
           name: electron-linux
           path: dist_electron/
+      - name: Download Windows Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: electron-win
+          path: dist_electron/
+      - name: Download Mac Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: electron-mac
+          path: dist_electron/
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: dist_electron/*.AppImage
+          files: dist_electron/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
