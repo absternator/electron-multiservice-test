@@ -70,9 +70,13 @@ cd file-service
 cargo build --release
 ```
 
-### Build and run the whole project for linux
+### Build the whole project for linux
 ```
 ./build-run-linux.sh
+```
+To run the built app run the AppImage:
+```
+./frontend/dist/*.AppImage
 ```
 
 ## Platform Notes
