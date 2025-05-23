@@ -1,0 +1,52 @@
+name: Build and Release Electron App
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "21"
+      - name: Make build-linux.sh executable
+        run: chmod +x ./build-linux.sh
+      - name: Build everything (Rust, Kotlin, Electron)
+        run: ./build-linux.sh
+      - name: Upload Linux Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: electron-linux
+          path: frontend/dist_electron/*.AppImage
+
+  release:
+    needs: build-linux
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Linux Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: electron-linux
+          path: dist_electron/
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist_electron/*.AppImage
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

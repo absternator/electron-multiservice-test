@@ -17,5 +17,4 @@ cp -f $HERE/backend/app/build/libs/fat.jar $HERE/frontend/resources/linux/fat.ja
 # Create built version of frontend app in frontend
 $HERE/frontend/build.sh
 
-# run 
-$HERE/frontend/dist_electron/multivibe-0.0.0.AppImage
+
